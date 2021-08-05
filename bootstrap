@@ -1,0 +1,16 @@
+#!/bin/bash
+
+echo "[INFO:Bootstrap] Adding route to the iptables"
+iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
+echo "[INFO:Bootstrap] Added route Sucessfully"
+
+EC2_REGION='us-east-1'
+InstanceID=`/usr/bin/curl -s http://169.254.169.254/latest/meta-data/instance-id`
+echo "[INFO:Bootstrap] Trying to associate instace to the elastic IP"
+echo "aws ec2 associate-address --region --instance-id --public-ip 35.175.47.20 --profile dx26-elasticip-allocator"
+aws ec2 associate-address --region $EC2_REGION --instance-id $InstanceID --public-ip 35.175.47.20 --profile dx26-elasticip-allocator
+echo "[INFO:Bootstrap] Association sucessfully"
+
+systemctl start jenkins
+echo "[INFO:Bootstrap] Started Jenkins sucessfully"
+systemctl status jenkins
